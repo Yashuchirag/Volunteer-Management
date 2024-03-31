@@ -1,0 +1,18 @@
+/* Global styles */
+body {
+    background-image: url('volunteers.png'); /* URL to your image */
+    background-size:cover; /* Cover the entire background */
+    background-position: center; /* Center the image */
+    /* background-repeat:initial; */
+}
+
+.container {
+    text-align: center;
+}
+
+.title {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Add any other global styles here */

@@ -1,0 +1,67 @@
+/* Login component specific styles */
+.container{
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+    margin: auto;
+    margin-top: 50px;
+    width: 500px;
+    height: 300px;
+    background: rgb(255, 255, 255);
+}
+
+.header {
+    /* text-align: top; */
+    height: 90px;
+    font-size:xxx-large;
+    margin-top:0px;
+    margin-bottom:30px;
+    font-family: Calibri, sans-serif;
+    color: #000099;
+}
+
+.inputs {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    /* background: #681a1a; */
+}
+
+.input {
+    display: flex;
+    align-items: center;
+    margin: auto;
+    width: 350px;
+    height: 50px;
+    background: #eaeaea;
+    border-radius: 5px;
+}
+
+.input input {
+    height: 50px;
+    width: 350px;
+    background: transparent;
+    border-radius: 10px;
+    color: #797979;
+    font-size: 20px;
+}
+
+.button {
+    margin-top: 25px;
+}
+
+.button button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    height: 40px;
+    font-size: 20px;
+    margin: auto;
+    border-radius: 10px;
+    color: #ffffff;
+    background: #000099;
+    cursor:pointer;
+}
+/* Add any other login component specific styles here */
