@@ -22,4 +22,5 @@ The Volunteer Management System (VMS) is a comprehensive web application designe
 
 ## Architecture
 The application’s architecture is designed for ease of use. The UML diagram below provides a visual representation of the user flow and system components.
+
 ![ProjectArchitecture.png](ProjectArchitecture.png)
