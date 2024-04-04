@@ -39,4 +39,3 @@ const LoginForm = ({ onLogin }) => {
 };
 
 export default LoginForm;
-
