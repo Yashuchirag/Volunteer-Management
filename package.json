@@ -8,7 +8,8 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-scripts": "^4.0.3"
   },
   "browserslist": {
     "production": [
