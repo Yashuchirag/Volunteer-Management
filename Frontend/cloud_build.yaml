@@ -1,0 +1,12 @@
+steps:
+# Build the Docker image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/volunteer-management-419302/github.com/csci-5828-s24/volunteer-management:$COMMIT_SHA', '.']
+
+# Push the Docker image to Container Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/volunteer-management-419302/github.com/csci-5828-s24/volunteer-management:$COMMIT_SHA']
+
+# Deploy the Docker container
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['run', '-d', '-p', '80:80', 'gcr.io/volunteer-management-419302/github.com/csci-5828-s24/volunteer-management:$COMMIT_SHA']
