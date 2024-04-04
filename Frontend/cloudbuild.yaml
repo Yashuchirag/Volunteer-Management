@@ -2,6 +2,7 @@ steps:
 # Build the Docker image
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'gcr.io/volunteer-management/imagetest1', '.']
+  dir: './Frontend/'
 
 # Push the Docker image to Container Registry
 - name: 'gcr.io/cloud-builders/docker'
