@@ -24,3 +24,25 @@ The Volunteer Management System (VMS) is a comprehensive web application designe
 The application’s architecture is designed for ease of use. The UML diagram below provides a visual representation of the user flow and system components.
 
 ![ProjectArchitecture.png](ProjectArchitecture.png)
+
+## Current Progress
+
+### Succesfully deployed app on a docker container locally
+
+![dockercontainerlocalhost.png](dockercontainerlocalhost.png)
+
+Interacting with the input fields and clicking Log in button gives us the following response
+
+![dockercontainerlocalhostresponse.png](dockercontainerlocalhostresponse.png)
+
+
+### Succesfully Build docker image on GCP with Git triggers
+
+![GCP_succesful_build.jpg](GCP_succesful_build.jpg)
+
+### Facing issue with deploying the build to staging in the pipeline
+
+Currently we are try to resolve this issue to succesfully deploy the app on GCP.
+
+![GCP_deployment_issue.jpg](GCP_deployment_issue.jpg)
+
