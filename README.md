@@ -36,7 +36,7 @@ Interacting with the input fields and clicking Log in button gives us the follow
 ![dockercontainerlocalhostresponse.png](dockercontainerlocalhostresponse.png)
 
 
-### Succesfully Build docker image on GCP with Git triggers
+### Succesful docker image build on GCP with Git triggers
 
 ![GCP_succesful_build.jpg](GCP_succesful_build.jpg)
 
