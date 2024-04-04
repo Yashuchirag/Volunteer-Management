@@ -1,8 +1,29 @@
+# steps:
+# # Build the Docker image
+# - name: 'gcr.io/cloud-builders/docker'
+#   args: ['build', '-t', 'gcr.io/volunteer-management/imagetest1', '.']
+#   dir: './Frontend/'
+
+# # Push the Docker image to Container Registry
+# - name: 'gcr.io/cloud-builders/docker'
+#   args: ['push', 'gcr.io/volunteer-management/imagetest1']
+
+# # Deploy the Docker container
+# - name: 'gcr.io/cloud-builders/docker'
+#   args: ['run', '-d', '-p', '80:80', 'gcr.io/volunteer-management/imagetest1']
+
+# options:
+#   logging: CLOUD_LOGGING_ONLY  # or use NONE if you don't need Cloud Logging
+
 steps:
+# Clone the Git repository
+- name: 'gcr.io/cloud-builders/git'
+  args: ['clone', 'https://github.com/CSCI-5828-S24/Volunteer-Management', '/workspace/source']
+
 # Build the Docker image
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/volunteer-management/imagetest1', '.']
-  dir: './Frontend/'
+  args: ['build', '-t', 'gcr.io/volunteer-management/imagetest1', '.'] # '.' refers to the current directory
+  dir: '/workspace/source/Frontend' # Adjust the directory path based on the location of your Dockerfile
 
 # Push the Docker image to Container Registry
 - name: 'gcr.io/cloud-builders/docker'
@@ -13,4 +34,4 @@ steps:
   args: ['run', '-d', '-p', '80:80', 'gcr.io/volunteer-management/imagetest1']
 
 options:
-  logging: CLOUD_LOGGING_ONLY  # or use NONE if you don't need Cloud Logging
+  logging: CLOUD_LOGGING_ONLY  # or use NONE if you don't need Cloud Logging
