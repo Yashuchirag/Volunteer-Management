@@ -1,0 +1,21 @@
+{
+  "name": "Volunteers Management Platform",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "set PORT=3005 && react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "dependencies": {
+    "react-dom": "^18.2.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%"
+    ],
+    "development": [
+      "last 1 chrome version"
+    ]
+  }
+}
