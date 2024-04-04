@@ -10,3 +10,6 @@ steps:
 # Deploy the Docker container
 - name: 'gcr.io/cloud-builders/docker'
   args: ['run', '-d', '-p', '80:80', 'gcr.io/Volunteer-Management/imagetest1']
+
+options:
+  logging: CLOUD_LOGGING_ONLY  # or use NONE if you don't need Cloud Logging
