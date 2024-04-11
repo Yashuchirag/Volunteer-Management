@@ -1,5 +1,3 @@
-# Overview
-
 ## Introduction
 The Volunteer Management System (VMS) is a comprehensive web application designed to facilitate the organization and participation in volunteer events. It serves as a platform for hosts to manage events and for volunteers to sign up for available opportunities.
 
@@ -14,8 +12,8 @@ The Volunteer Management System (VMS) is a comprehensive web application designe
 - Homepage: A welcoming page with login options for hosts and volunteers.
 - Shared Login Page: A single login page that authenticates users and directs them to the appropriate interface based on the option selected on the homepage.
 - Host Interface: Allows hosts to manage event postings and volunteer requirements which includes the ability to create, edit, and delete events.
-- Volunteer Interface: Enables volunteers to browse and sign-up for events.
-- Data Collector: Gathers and stores volunteer sign ups and the events postings in the database.
+- Volunteer Interface: Enables volunteers to browse and sign up for events.
+- Data Collector: Gathers and stores volunteer sign-ups and the events postings in the database.
 - Data Analyzer: Ensures no shift overlaps and filters out expired events.
 - Database: SQL for all application data.
 
@@ -23,8 +21,6 @@ The Volunteer Management System (VMS) is a comprehensive web application designe
 ## Architecture
 The application’s architecture is designed for ease of use. The UML diagram below provides a visual representation of the user flow and system components.
 
-![ProjectArchitecture.png](ProjectArchitecture2.png)
+![ProjectArchitecture2.png](ProjectArchitecture2.png)
 
-## Current Progress
-
-### Succesfully deployed app (dummy login page) on [this link](https://volunteeringmanagement-effc1f30f74b.herokuapp.com/).
+### Successfully deployed app (dummy login page) on [this link](https://volunteeringmanagement-effc1f30f74b.herokuapp.com/).
