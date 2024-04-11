@@ -23,4 +23,4 @@ The application’s architecture is designed for ease of use. The UML diagram be
 
 ![ProjectArchitecture2.png](ProjectArchitecture2.png)
 
-### Successfully deployed app (dummy login page) on [this link](https://volunteeringmanagement-effc1f30f74b.herokuapp.com/).
+### Successfully deployed app on [this link](https://volunteeringmanagement-effc1f30f74b.herokuapp.com/).
