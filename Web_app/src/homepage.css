@@ -1,0 +1,32 @@
+.homepage-container {
+    padding: 20px;
+    height: calc(100vh - 200px); /* Adjust the height based on your layout */
+    overflow-y: auto; /* Add vertical scroll bar if content overflows */
+}
+
+.heading {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.subtitle {
+    margin-top: 20px;
+    font-size: 20px;
+}
+
+.event-table {
+    margin-top: 20px;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.event-table th,
+.event-table td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+.event-table th {
+    background-color: #f2f2f2;
+}
