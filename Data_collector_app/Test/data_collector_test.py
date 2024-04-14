@@ -27,7 +27,7 @@ class TestDataCollector(unittest.TestCase):
         # Assert that the response status code is 200
         self.assertEqual(response.status_code, 200)
         # Assert that the response contains the expected message
-        self.assertEqual(response.data.decode('utf-8'), "Data collected successfully")
+        self.assertEqual(response.data.decode('utf-8'), "Data collected and stored successfully in PostgreSQL.")
 
 if __name__ == '__main__':
     unittest.main()

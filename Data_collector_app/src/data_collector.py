@@ -10,95 +10,52 @@ def get_html_content(url):
     else:
         abort(500, f"Failed to fetch HTML content from {url}. Status code: {response.status_code}")
 
-# app = Flask(__name__)
+app = Flask(__name__)
 def create_connection():
     
     # Connect to the default PostgreSQL database (usually 'postgres')
-    # try:
-
-    #     default_connection = psycopg2.connect(
-    #         user="postgres",
-    #         password="postthis9317",
-    #         host="localhost",
-    #         port="5432",
-    #         database="Volunteer_Management"
-    #     )
-    #     default_cursor = default_connection.cursor()
-    #     print("connection successful")
-    # # Create the specified database if it does not exist
-    # except:
-    #     default_connection = psycopg2.connect(
-    #         user="postgres",
-    #         password="postthis9317",
-    #         host="localhost",
-    #         port="5432",
-    #         database="postgres"
-    #     )
-    #     default_cursor = default_connection.cursor()
-    #     default_cursor.execute(f"SELECT 1 FROM pg_catalog.pg_database WHERE datname = 'Volunteer_Management';")
-    #     if not default_cursor.fetchone():
-    #         default_cursor.execute(f"CREATE DATABASE Volunteer_Management;")
-        
-    #     default_connection.commit()
-    #     default_cursor.close()
-    #     default_connection.close()
-
-    #     # Connect to the specified database
-        
-    #     events = psycopg2.connect(
-    #         user="postgres",
-    #         password="postthis9317",
-    #         host="localhost",
-    #         port="5432",
-    #         database="Volunteer_Management"
-    #     )
-    #     print("database created connection successful")
-    # return events
-    print('starting the connection')
     try:
+
         default_connection = psycopg2.connect(
-                user="postgres",
-                password="postthis9317",
-                host="localhost",
-                port="5432",
-                database="postgres"
-            )
-        print('connection successful')
+            user="postgres",
+            password="postthis9317",
+            host="localhost",
+            port="5432",
+            database="volunteer_management"
+        )
+        default_connection.autocommit= True
+        print("database connection successful")
         default_cursor = default_connection.cursor()
-        # try:
-        default_cursor.execute("SELECT datname FROM pg_database where datname = 'Volunteer_Management';")
-        details = default_cursor.fetchall()    
-        print(f'fetched data: {details}')
-        print('cursor execution successful')
-        if 'Volunteer_Management'not in details:
-            # default_cursor.close() 
-            # default_connection.close()
-            new_connection = psycopg2.connect(
-                user="postgres",
-                password="postthis9317",
-                host="localhost",
-                port="5432"
-            )
-            new_cursor = new_connection.cursor()
-            print('new cursor connection successful')
-            # Execute the query to create 'Volunteer_Management' database
-            sql='''CREATE DATABASE Volunteer_Management''';
-            new_cursor.execute(sql)
-            new_connection.commit()
-            
-            print("'Volunteer_Management' database created successfully.")
-            
-            # Close the cursor and connection
-            new_cursor.close()
-            new_connection.close()
-            # default_cursor.execute(f"CREATE DATABASE Volunteer_Management;")
-        # except:
-        #     print('cursor execution failed')
-        default_cursor.close() 
-        default_connection.close()
-        print('connection closed')
+        default_cursor.close()
     except:
-        print('connection failed')
+        # Create the specified database if it does not exist
+        default_connection = psycopg2.connect(
+            user="postgres",
+            password="postthis9317",
+            host="localhost",
+            port="5432",
+            database="postgres"
+        )
+        default_connection.autocommit= True
+        default_cursor = default_connection.cursor()
+        sql= '''CREATE database volunteer_management''';
+        default_cursor.execute(sql)
+        print("database created successfully")
+        default_cursor.close()
+        default_connection.close()
+
+        # Connect to the specified database
+        
+        default_connection = psycopg2.connect(
+            user="postgres",
+            password="postthis9317",
+            host="localhost",
+            port="5432",
+            database="volunteer_management"
+        )
+        default_connection.autocommit= True
+        print("database connection successful")
+    return default_connection
 
 def create_table(events):
     cursor = events.cursor()
@@ -109,17 +66,17 @@ def create_table(events):
                         date_and_time TEXT,
                         event_description TEXT
                     );''')
-    events.commit()
+    # events.autocommit = True
     cursor.close()
 
 def insert_event( events, event_name, date_and_time, event_description):
     cursor = events.cursor()
     cursor.execute("INSERT INTO events (event_name, date_and_time, event_description) VALUES (%s, %s, %s);",
                    (event_name, date_and_time, event_description))
-    events.commit()
+    # events.commit()
     cursor.close()
 
-# @app.route('/collect-data', methods=['POST'])
+@app.route('/collect-data', methods=['POST'])
 def collect_data():
     events = create_connection()
     create_table(events)
@@ -146,6 +103,6 @@ def collect_data():
     return "Data collected and stored successfully in PostgreSQL."
 
 if __name__ == "__main__": 
-    events = create_connection()
+    # events = create_connection()
     # create_table(events)
-   # app.run(host='0.0.0.0', port=5001)
+   app.run(host='0.0.0.0', port=5001)
