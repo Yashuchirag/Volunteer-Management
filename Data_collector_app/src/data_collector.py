@@ -1,16 +1,151 @@
-from flask import Flask
+from flask import Flask, abort
 import requests
 from bs4 import BeautifulSoup
-import re
+import psycopg2
 
+def get_html_content(url):
+    response = requests.get(url)
+    if response.status_code == 200:
+        return BeautifulSoup(response.text, "html.parser")
+    else:
+        abort(500, f"Failed to fetch HTML content from {url}. Status code: {response.status_code}")
 
-app = Flask(__name__)
+# app = Flask(__name__)
+def create_connection():
+    
+    # Connect to the default PostgreSQL database (usually 'postgres')
+    # try:
 
-@app.route('/collect-data', methods=['POST'])
+    #     default_connection = psycopg2.connect(
+    #         user="postgres",
+    #         password="postthis9317",
+    #         host="localhost",
+    #         port="5432",
+    #         database="Volunteer_Management"
+    #     )
+    #     default_cursor = default_connection.cursor()
+    #     print("connection successful")
+    # # Create the specified database if it does not exist
+    # except:
+    #     default_connection = psycopg2.connect(
+    #         user="postgres",
+    #         password="postthis9317",
+    #         host="localhost",
+    #         port="5432",
+    #         database="postgres"
+    #     )
+    #     default_cursor = default_connection.cursor()
+    #     default_cursor.execute(f"SELECT 1 FROM pg_catalog.pg_database WHERE datname = 'Volunteer_Management';")
+    #     if not default_cursor.fetchone():
+    #         default_cursor.execute(f"CREATE DATABASE Volunteer_Management;")
+        
+    #     default_connection.commit()
+    #     default_cursor.close()
+    #     default_connection.close()
+
+    #     # Connect to the specified database
+        
+    #     events = psycopg2.connect(
+    #         user="postgres",
+    #         password="postthis9317",
+    #         host="localhost",
+    #         port="5432",
+    #         database="Volunteer_Management"
+    #     )
+    #     print("database created connection successful")
+    # return events
+    print('starting the connection')
+    try:
+        default_connection = psycopg2.connect(
+                user="postgres",
+                password="postthis9317",
+                host="localhost",
+                port="5432",
+                database="postgres"
+            )
+        print('connection successful')
+        default_cursor = default_connection.cursor()
+        # try:
+        default_cursor.execute("SELECT datname FROM pg_database where datname = 'Volunteer_Management';")
+        details = default_cursor.fetchall()    
+        print(f'fetched data: {details}')
+        print('cursor execution successful')
+        if 'Volunteer_Management'not in details:
+            # default_cursor.close() 
+            # default_connection.close()
+            new_connection = psycopg2.connect(
+                user="postgres",
+                password="postthis9317",
+                host="localhost",
+                port="5432"
+            )
+            new_cursor = new_connection.cursor()
+            print('new cursor connection successful')
+            # Execute the query to create 'Volunteer_Management' database
+            sql='''CREATE DATABASE Volunteer_Management''';
+            new_cursor.execute(sql)
+            new_connection.commit()
+            
+            print("'Volunteer_Management' database created successfully.")
+            
+            # Close the cursor and connection
+            new_cursor.close()
+            new_connection.close()
+            # default_cursor.execute(f"CREATE DATABASE Volunteer_Management;")
+        # except:
+        #     print('cursor execution failed')
+        default_cursor.close() 
+        default_connection.close()
+        print('connection closed')
+    except:
+        print('connection failed')
+
+def create_table(events):
+    cursor = events.cursor()
+    # Adjust the table schema as per your requirements
+    cursor.execute('''CREATE TABLE IF NOT EXISTS events (
+                        id SERIAL PRIMARY KEY,
+                        event_name TEXT,
+                        date_and_time TEXT,
+                        event_description TEXT
+                    );''')
+    events.commit()
+    cursor.close()
+
+def insert_event( events, event_name, date_and_time, event_description):
+    cursor = events.cursor()
+    cursor.execute("INSERT INTO events (event_name, date_and_time, event_description) VALUES (%s, %s, %s);",
+                   (event_name, date_and_time, event_description))
+    events.commit()
+    cursor.close()
+
+# @app.route('/collect-data', methods=['POST'])
 def collect_data():
-    # Add your data collection logic here
-    # This function will be called when a POST request is made to /collect-data
-    return "Data collected successfully"
+    events = create_connection()
+    create_table(events)
+    eventDeptDict = {'Communications and Engagement':'D/Coms', 'Climate Initiatives':'D/CI', 'Housing and Human Services':'d/hhs', 'Open Space and Mountain Parks':'d/osmp', 'Parks and Recreation':'d/parksrec', 'Public Works':'d/pw',}
+    for dept in eventDeptDict.keys():
+        url = "https://countmein.bouldercolorado.gov/" + eventDeptDict[dept]  # Adjust the URL accordingly
+        html_content = get_html_content(url)
+        event_html = html_content.find_all('tr')
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5001)
+        for event_list in event_html:
+            event_name_element = event_list.find('a', attrs={"title": "Activity Details"})
+            date_time_element = event_list.find('h5', attrs={"class": "margin-top-5"})
+            description_element = event_list.find('p')
+
+            # Check if elements are found before calling get_text()
+            event_name = event_name_element.get_text() if event_name_element else None
+            date_time = date_time_element.get_text() if date_time_element else None
+            description = description_element.get_text() if description_element else None
+
+            # Insert data into PostgreSQL table only if all elements are found
+            if all((events, event_name, date_time, description)):
+                insert_event(events, event_name, date_time, description)
+
+    return "Data collected and stored successfully in PostgreSQL."
+
+if __name__ == "__main__": 
+    events = create_connection()
+    # create_table(events)
+   # app.run(host='0.0.0.0', port=5001)
