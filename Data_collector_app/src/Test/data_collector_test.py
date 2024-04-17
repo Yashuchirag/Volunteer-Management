@@ -2,7 +2,8 @@ import unittest
 import sys
 import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
+main_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'Main'))
+sys.path.append(main_path)
 
 # Now you can import app from data_collector module
 from data_collector import app
