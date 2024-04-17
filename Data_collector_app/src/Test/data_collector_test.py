@@ -5,18 +5,16 @@ import os
 main_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'Main'))
 sys.path.append(main_path)
 
-# Now you can import app from data_collector module
+
 from data_collector import app
 
-# Your test cases continue here...
 
 
 class TestDataCollector(unittest.TestCase):
 
     def setUp(self):
-        # Create a test client using Flask's test_client method
         self.app = app.test_client()
-        # Disable Flask's error catching during tests
+
         app.config['TESTING'] = True
 
     def tearDown(self):
