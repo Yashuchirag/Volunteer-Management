@@ -6,7 +6,7 @@
     "build": "cd Web_app && react-scripts build",
     "test": "cd Web_app && react-scripts test",
     "eject": "cd Web_app && react-scripts eject",
-    "heroku-postbuild": "cd Web_app && npm install && npm run build"
+    "heroku-postbuild": "pwd && ls -la && npm install && npm run build"
   },
   "engines": {
     "node": "16.x",
