@@ -1,6 +1,9 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import Homepage from '.main/homepage.js';
+import '@testing-library/jest-dom';
+import Homepage from '../main/homepage.js';
+
+
 
 describe('Homepage Component', () => {
     const mockEvents = [
