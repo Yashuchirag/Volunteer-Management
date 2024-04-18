@@ -92,9 +92,9 @@ def collect_data():
             description_element = event_list.find('p')
 
             # Check if elements are found before calling get_text()
-            event_name = event_name_element.get_text() if event_name_element else None
-            date_time = date_time_element.get_text() if date_time_element else None
-            description = description_element.get_text() if description_element else None
+            event_name = event_name_element.get_text().replace('\n', '') if event_name_element else None
+            date_time = date_time_element.get_text().replace('\n', '') if date_time_element else None
+            description = description_element.get_text().replace('\n', '') if description_element else None
 
             # Insert data into PostgreSQL table only if all elements are found
             if all((events, event_name, date_time, description)):
