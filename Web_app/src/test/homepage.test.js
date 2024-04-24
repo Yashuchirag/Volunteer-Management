@@ -30,7 +30,7 @@ describe('Homepage Component', () => {
       expect(screen.getByText(/Welcome, JohnDoe!/)).toBeInTheDocument();
       
       // Check for the subtitle
-      expect(screen.getByText('List of Events:')).toBeInTheDocument();
+      expect(screen.getByText('Upcoming Events:')).toBeInTheDocument();
       
       // Check for table headers
       expect(screen.getByText('Event Name')).toBeInTheDocument();

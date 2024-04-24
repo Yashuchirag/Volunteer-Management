@@ -2,6 +2,7 @@ from flask import Flask, abort
 import requests
 from bs4 import BeautifulSoup
 import psycopg2
+import json
 
 def get_html_content(url):
     response = requests.get(url)
@@ -18,7 +19,7 @@ def create_connection():
 
         default_connection = psycopg2.connect(
             user="postgres",
-            password="postthis9317",
+            password="education",
             host="localhost",
             port="5432",
             database="volunteer_management"
@@ -31,7 +32,7 @@ def create_connection():
         # Create the specified database if it does not exist
         default_connection = psycopg2.connect(
             user="postgres",
-            password="postthis9317",
+            password="education",
             host="localhost",
             port="5432",
             database="postgres"
@@ -48,7 +49,7 @@ def create_connection():
         
         default_connection = psycopg2.connect(
             user="postgres",
-            password="postthis9317",
+            password="education",
             host="localhost",
             port="5432",
             database="volunteer_management"
@@ -101,6 +102,27 @@ def collect_data():
                 insert_event(events, event_name, date_time, description)
 
     return "Data collected and stored successfully in PostgreSQL."
+
+@app.route('/events', methods=['GET'])
+def get_events():
+    print('Getting events data for frontend')
+    connection = create_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM events")
+    events = cursor.fetchall()
+    events_details = {}
+    for i in range(len(events)):
+        data = {}
+        data['index'] = events[i][0]
+        data['event_name'] = events[i][1]
+        data['date_and_time'] = events[i][2]
+        data['event_description'] = events[i][3]
+        events_details[f'event_{i}'] = data
+    events = json.dumps(events_details)
+    cursor.close()
+    connection.close()
+    print(type(events))
+    return (events)
 
 if __name__ == "__main__": 
     # events = create_connection()
