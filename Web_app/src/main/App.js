@@ -11,12 +11,9 @@ const App = () => {
 
     const fetchEvents = async () => {
         try {
-            alert("Fetching events");
             const response = await fetch('http://localhost:5001/events');
-            alert("Fetched events");
             if (response.ok) {
                 const eventData = await response.json();
-                alert("Fetching 1 event");
                 // Transform the object into an array
                 const eventsArray = Object.keys(eventData).map(key => {
                     return {
@@ -53,7 +50,7 @@ const App = () => {
             ) : (
                 <LoginForm onLogin={handleLogin} />
             )}
-            {error && <div className="error">{error}</div>}  // Display errors if any
+            {error && <div className="error">{error}</div>}
         </div>
     );
 };
