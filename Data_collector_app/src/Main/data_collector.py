@@ -1,4 +1,5 @@
 from flask import Flask, abort
+from flask_cors import CORS
 import requests
 from bs4 import BeautifulSoup
 import psycopg2
@@ -12,6 +13,7 @@ def get_html_content(url):
         abort(500, f"Failed to fetch HTML content from {url}. Status code: {response.status_code}")
 
 app = Flask(__name__)
+CORS(app)
 def create_connection():
     
     # Connect to the default PostgreSQL database (usually 'postgres')
