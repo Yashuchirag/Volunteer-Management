@@ -40,7 +40,7 @@ const App = () => {
         // For simplicity, let's just set the logged-in user
         const username = email.split('@')[0];
         setLoggedInUser(username);
-        // fetchEvents();
+        fetchEvents();
     };
 
     return (

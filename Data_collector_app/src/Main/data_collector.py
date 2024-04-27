@@ -85,7 +85,8 @@ def create_users_table(connection):
 
 def insert_event( events, event_name, date_and_time, event_description):
     cursor = events.cursor()
-    cursor.execute("INSERT INTO events (event_name, date_and_time, event_description) VALUES (%s, %s, %s);",
+    cursor.execute('''INSERT INTO events (event_name, date_and_time, event_description) 
+                   VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;''',
                    (event_name, date_and_time, event_description))
     # events.commit()
     cursor.close()
