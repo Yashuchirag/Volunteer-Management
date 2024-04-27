@@ -1,8 +1,9 @@
-from flask import Flask, abort
+from flask import Flask, abort, request, jsonify
+from flask_cors import CORS
 import requests
 from bs4 import BeautifulSoup
 import psycopg2
-import json
+import json,jsonpickle
 
 def get_html_content(url):
     response = requests.get(url)
@@ -12,6 +13,7 @@ def get_html_content(url):
         abort(500, f"Failed to fetch HTML content from {url}. Status code: {response.status_code}")
 
 app = Flask(__name__)
+CORS(app)
 def create_connection():
     
     # Connect to the default PostgreSQL database (usually 'postgres')
@@ -58,14 +60,25 @@ def create_connection():
         print("database connection successful")
     return default_connection
 
-def create_table(events):
-    cursor = events.cursor()
+def create_events_table(connection):
+    cursor = connection.cursor()
     # Adjust the table schema as per your requirements
     cursor.execute('''CREATE TABLE IF NOT EXISTS events (
                         id SERIAL PRIMARY KEY,
                         event_name TEXT,
                         date_and_time TEXT,
                         event_description TEXT
+                    );''')
+    # events.autocommit = True
+    cursor.close()
+
+def create_users_table(connection):
+    cursor = connection.cursor()
+    # Adjust the table schema as per your requirements
+    cursor.execute('''CREATE TABLE IF NOT EXISTS users (
+                        id SERIAL not null,
+                        email TEXT primary key,
+                        password TEXT not null
                     );''')
     # events.autocommit = True
     cursor.close()
@@ -80,7 +93,7 @@ def insert_event( events, event_name, date_and_time, event_description):
 @app.route('/collect-data', methods=['POST'])
 def collect_data():
     events = create_connection()
-    create_table(events)
+    create_events_table(events)
     eventDeptDict = {'Communications and Engagement':'D/Coms', 'Climate Initiatives':'D/CI', 'Housing and Human Services':'d/hhs', 'Open Space and Mountain Parks':'d/osmp', 'Parks and Recreation':'d/parksrec', 'Public Works':'d/pw',}
     for dept in eventDeptDict.keys():
         url = "https://countmein.bouldercolorado.gov/" + eventDeptDict[dept]  # Adjust the URL accordingly
@@ -123,6 +136,45 @@ def get_events():
     connection.close()
     print(type(events))
     return (events)
+
+@app.route('/signup', methods=['POST'])
+def signup():
+    data = request.json
+    email = data.get('email')
+    print('email: ',email)
+    password = data.get('password')
+    print('password: ',password)
+    # Check if user already exists in the database
+    connection = create_connection()
+    create_users_table(connection)
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+    user = cursor.fetchone()
+    if user:
+        print('User already exists')
+        return jsonify({'message': 'User already exists'}), 400
+    else:
+        # Insert new user into the database
+        cursor.execute("INSERT INTO users (email, password) VALUES (%s, %s)", (email, password))
+        print('User created successfully')
+        return jsonify({'message': 'User created successfully'}), 201
+    
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    email = data.get('email')
+    print('email: ',email)
+    password = data.get('password')
+    print('password: ',password)
+    connection = create_connection()
+    create_users_table(connection)
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM users WHERE email = %s AND password = %s", (email, password))
+    user = cursor.fetchone()
+    if user:
+        return jsonify({'message': 'Login successful'}), 200
+    else:
+        return jsonify({'message': 'Invalid credentials'}), 401
 
 if __name__ == "__main__": 
     # events = create_connection()
