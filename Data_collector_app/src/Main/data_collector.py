@@ -3,7 +3,8 @@ from flask_cors import CORS
 import requests
 from bs4 import BeautifulSoup
 import psycopg2
-import json,jsonpickle
+import json
+import re
 
 def get_html_content(url):
     response = requests.get(url)
@@ -83,11 +84,11 @@ def create_users_table(connection):
     # events.autocommit = True
     cursor.close()
 
-def insert_event( events, event_name, date_and_time, event_description):
+def insert_event( events, event_name, date, time, event_description):
     cursor = events.cursor()
-    cursor.execute('''INSERT INTO events (event_name, date_and_time, event_description) 
-                   VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;''',
-                   (event_name, date_and_time, event_description))
+    cursor.execute('''INSERT INTO events (event_name, date, time, event_description) 
+                   VALUES (%s, %s, %s, %s) ON CONFLICT DO NOTHING;''',
+                   (event_name, date, time, event_description))
     # events.commit()
     cursor.close()
 
@@ -109,11 +110,14 @@ def collect_data():
             # Check if elements are found before calling get_text()
             event_name = event_name_element.get_text().replace('\n', '') if event_name_element else None
             date_time = date_time_element.get_text().replace('\n', '') if date_time_element else None
+            date_time = date_time_element.get_text() if date_time_element else None
+            date_time_regex = r"(\d{1,2}\s[A-Za-z]+\s\d{4})\s+\|\s+(\d{2}:\d{2}\s[AP]M)"
+            date, time = re.findall(date_time_regex, date_time)[0]
             description = description_element.get_text().replace('\n', '') if description_element else None
 
             # Insert data into PostgreSQL table only if all elements are found
-            if all((events, event_name, date_time, description)):
-                insert_event(events, event_name, date_time, description)
+            if all((events, event_name, date, time, description)):
+                insert_event(events, event_name, date, time, description)
 
     return "Data collected and stored successfully in PostgreSQL."
 
