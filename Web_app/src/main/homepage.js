@@ -19,31 +19,23 @@ const Homepage = ({ user, events }) => {
     };
     return (
         <div className="homepage-container">
-            <div className="heading">Welcome, {user}! </div>
+            <div className="heading">Volunteer Management Platform </div>
+            <div className="title">Welcome, {user}! </div>
             <div className="subtitle"><b>Upcoming Events:</b></div>
-            <table className="event-table">
-                <thead>
-                    <tr>
-                        <th style={{ width: '5cm' }}>Event Name</th>
-                        <th style={{ width: '10cm' }}>Event Description</th>
-                        <th style={{ width: '2.5cm' }}>Event Date</th>
-                        <th style={{ width: '2.5cm' }}>Event Time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {events.map((event) => {
-                        const { date, time } = parseDateTime(event.date_and_time);
-                        return (
-                            <tr key={event.index}>
-                                <td>{event.event_name}</td>
-                                <td>{event.event_description}</td>
-                                <td>{date}</td>
-                                <td>{time}</td>
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
+            <div className="event-cards">
+                {events.map((event, index) => {
+                    const { date, time } = parseDateTime(event.date_and_time);
+                    return (
+                        <div className="event-card" key={index}>
+                            <div className="event-name">{event.event_name}</div>
+                            <div className="event-description">{event.event_description}</div>
+                            <div className="event-date-time">{`${date} - ${time}`}</div>
+                            {/* <div className="event-date">{date}</div>
+                            <div className="event-time">{time}</div> */}
+                        </div>
+                    );
+                })}
+            </div>
         </div>
     );
 };
