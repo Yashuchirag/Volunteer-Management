@@ -15,3 +15,5 @@ jobs:
           heroku_api_key: ${{secrets.27691e04-7d40-4c4b-b99b-2db0fb7e8a79}}
           heroku_app_name: "blooming-reef-79073" #Must be unique in Heroku
           heroku_email: "chiragchandrashekar@gmail.com"
+          buildpack: "https://github.com/heroku/heroku-buildpack-python" # Example for Python buildpack
+          branch: "main"
