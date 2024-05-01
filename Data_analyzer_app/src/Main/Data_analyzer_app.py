@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import psycopg2
 import numpy as np
+import datetime
 
 app = Flask(__name__)
 
@@ -25,18 +26,22 @@ def analyze_data():
         cursor.execute("SELECT COUNT(EMAIL) FROM VOLUNTEER_TABLE_TEST;")
         volunteer_count = cursor.fetchall()[0][0]
 
-        cursor.execute("SELECT REQUIRED_VOLUNTEER_COUNT, NO_SIGN_UPS FROM EVENT_LIST;")
-        sign_up_tuples = cursor.fetchall()
+        cursor.execute("SELECT DATE, VALID_DATE from EVENT_LIST;")
+        event_data = cursor.fetchall()
 
         # Check if data is retrieved
         if not volunteer_count:
             return jsonify({"error": "No data retrieved from the login database"}), 400
         
-        if not sign_up_tuples:
+        if not event_data:
             return jsonify({"error": "No data retrieved from the event sign up database"}), 400
+        
+        dates = [row[0] for row in event_data]
+        valid_dates = [row[1] for row in event_data]
 
         # Perform data analysis and store result in database
-        store_analysis_result(cursor, volunteer_count, sign_up_tuples)
+        store_valid_date(cursor, dates, valid_dates)
+        store_analysis_result(cursor, volunteer_count)
 
         # Commit changes to the database
         connection.commit()
@@ -52,15 +57,22 @@ def analyze_data():
         cursor.close()
         connection.close()
 
-def store_analysis_result(cursor_analysis, vol_count, sign_up_tups):
-    # Implement your data analysis logic here
-    # This is a placeholder; you can replace it with your actual analysis code
-    
-    avg_sign_ups_per_event = [second_column / first_column for first_column, second_column in sign_up_tups]
-    avg_sign_up = np.mean(avg_sign_ups_per_event)
-    
+def store_analysis_result(cursor_analysis, vol_count, sign_up_tups):    
     # Store analysis result in database table
-    cursor_analysis.execute("INSERT INTO analysis_results (volunteer_count, average_sign_ups_per_event, avg_sign_up) VALUES (%s, %s, %s);", (vol_count, avg_sign_ups_per_event, avg_sign_up))
+    cursor_analysis.execute("INSERT INTO analysis_results (volunteer_count) VALUES (%s);", (vol_count))
+
+def store_valid_date(cursor_analysis, dates, valid_date):
+    # Check if the event date is in the future
+    current_date = datetime.now().date()
+
+    for event_date in dates:
+        event_date = datetime.strptime(event_date, "%d %B %Y").date()
+        if event_date >= current_date:
+            # If the event date is in the future, set VALID_DATE to 1
+            cursor_analysis.execute("UPDATE EVENT_LIST SET VALID_DATE = 1 WHERE TO_DATE(DATE, 'DD Month YYYY') = %s", (event_date,))
+        else:
+            # If the event date is in the past, set VALID_DATE to 0
+            cursor_analysis.execute("UPDATE EVENT_LIST SET VALID_DATE = 0 WHERE TO_DATE(DATE, 'DD Month YYYY') = %s", (event_date,))
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5002)
