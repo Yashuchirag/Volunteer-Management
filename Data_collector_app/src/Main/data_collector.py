@@ -84,11 +84,11 @@ def create_users_table(connection):
     # events.autocommit = True
     cursor.close()
 
-def insert_event( events, event_name, date, time, event_description):
+def insert_event( events, event_name, date, time, event_description, valid_date):
     cursor = events.cursor()
-    cursor.execute('''INSERT INTO events (event_name, date, time, event_description) 
-                   VALUES (%s, %s, %s, %s) ON CONFLICT DO NOTHING;''',
-                   (event_name, date, time, event_description))
+    cursor.execute('''INSERT INTO events (event_name, date, time, event_description, valid_date) 
+                   VALUES (%s, %s, %s, %s, %s) ON CONFLICT DO NOTHING;''',
+                   (event_name, date, time, event_description, valid_date))
     # events.commit()
     cursor.close()
 
@@ -114,10 +114,11 @@ def collect_data():
             date_time_regex = r"(\d{1,2}\s[A-Za-z]+\s\d{4})\s+\|\s+(\d{2}:\d{2}\s[AP]M)"
             date, time = re.findall(date_time_regex, date_time)[0]
             description = description_element.get_text().replace('\n', '') if description_element else None
+            valid_date = 1
 
             # Insert data into PostgreSQL table only if all elements are found
-            if all((events, event_name, date, time, description)):
-                insert_event(events, event_name, date, time, description)
+            if all((events, event_name, date, time, description, valid_date)):
+                insert_event(events, event_name, date, time, description, valid_date)
 
     return "Data collected and stored successfully in PostgreSQL."
 
