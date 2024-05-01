@@ -18,7 +18,7 @@ def analyze_data():
     # Connect to the PostgreSQL database
     connection = psycopg2.connect(**DB_PARAMS)
     cursor = connection.cursor()
-    cursor2 = connection.cursor()
+    # cursor2 = connection.cursor()
 
     try:
         # Fetch data from the database table
@@ -60,7 +60,7 @@ def store_analysis_result(cursor_analysis, vol_count, sign_up_tups):
     avg_sign_up = np.mean(avg_sign_ups_per_event)
     
     # Store analysis result in database table
-    cursor_analysis.execute("INSERT INTO analysis_results (volnteer_count, average_sign_ups_per_event, avg_sign_up) VALUES (%s, %s, %s);", (vol_count, avg_sign_ups_per_event, avg_sign_up))
+    cursor_analysis.execute("INSERT INTO analysis_results (volunteer_count, average_sign_ups_per_event, avg_sign_up) VALUES (%s, %s, %s);", (vol_count, avg_sign_ups_per_event, avg_sign_up))
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5002)
