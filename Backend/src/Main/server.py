@@ -1,19 +1,16 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import requests
-from bs4 import BeautifulSoup
 import psycopg2
-import json
-import re
-import schedule
-import time
 
 app = Flask(__name__)
 CORS(app)
 
 def create_connection():
     try:
-
+        # database_url = 'postgres://kwkduxwxgqawim:251a81fb1d17b679565b576b48b8f520f46e5e85ba269d5d4e29e8df247d4ba0@ec2-23-22-172-65.compute-1.amazonaws.com:5432/d2isdsq00u30bg'
+        # default_connection = psycopg2.connect(database_url, sslmode='require')
+        # default_connection.autocommit= True
+        # print("database connection successful")
         default_connection = psycopg2.connect(
             user="postgres",
             password="education",
@@ -25,59 +22,40 @@ def create_connection():
         print("database connection successful")
         default_cursor = default_connection.cursor()
         default_cursor.close()
+        return default_connection
     except:
-        # Create the specified database if it does not exist
-        default_connection = psycopg2.connect(
-            user="postgres",
-            password="education",
-            host="localhost",
-            port="5432",
-            database="postgres"
-        )
-        default_connection.autocommit= True
-        default_cursor = default_connection.cursor()
-        sql= '''CREATE database volunteer_management''';
-        default_cursor.execute(sql)
-        print("database created successfully")
-        default_cursor.close()
-        default_connection.close()
-
-        # Connect to the specified database
-        
-        default_connection = psycopg2.connect(
-            user="postgres",
-            password="education",
-            host="localhost",
-            port="5432",
-            database="volunteer_management"
-        )
-        default_connection.autocommit= True
-        print("database connection successful")
-    return default_connection
+        print("database connection unsuccessful")
+        return None
 
 def create_events_table(connection):
     cursor = connection.cursor()
-    # Adjust the table schema as per your requirements
     cursor.execute('''CREATE TABLE IF NOT EXISTS events (
-                        id SERIAL PRIMARY KEY,
+                        event_id SERIAL not null,
                         event_name TEXT,
                         date TEXT,
                         time TEXT,
                         event_description TEXT,
-                        valid_date INTEGER
+                        valid_date INTEGER,
+                        PRIMARY KEY (event_name,date,time,event_description)
                     );''')
-    # events.autocommit = True
     cursor.close()
 
 def create_users_table(connection):
     cursor = connection.cursor()
-    # Adjust the table schema as per your requirements
     cursor.execute('''CREATE TABLE IF NOT EXISTS users (
-                        id SERIAL not null,
+                        user_id SERIAL not null,
                         email TEXT primary key,
                         password TEXT not null
                     );''')
-    # events.autocommit = True
+    cursor.close()
+
+def create_event_stats_table(connection):
+    cursor = connection.cursor()
+    cursor.execute('''CREATE TABLE IF NOT EXISTS event_stats (
+                        event_id INTEGER not null,
+                        user_id INTEGER not null,
+                        PRIMARY KEY(event_id,user_id)
+                    );''')
     cursor.close()
 
 @app.route('/events', methods=['GET'])
@@ -96,7 +74,7 @@ def get_events():
         data['time'] = events[i][3]
         data['event_description'] = events[i][4]
         events_details[f'event_{i}'] = data
-    events = json.dumps(events_details)
+    events = jsonify(events_details)
     cursor.close()
     connection.close()
     return (events)
@@ -106,7 +84,7 @@ def signup():
     data = request.json
     email = data.get('email')
     password = data.get('password')
-    # Check if user already exists in the database
+    # Checking if user already exists in the database
     connection = create_connection()
     create_users_table(connection)
     cursor = connection.cursor()
@@ -116,7 +94,7 @@ def signup():
         print('User already exists')
         return jsonify({'message': 'User already exists'}), 400
     else:
-        # Insert new user into the database
+        # Inserting new user into the database
         cursor.execute("INSERT INTO users (email, password) VALUES (%s, %s)", (email, password))
         print('User created successfully')
         return jsonify({'message': 'User created successfully'}), 201
@@ -135,6 +113,30 @@ def login():
         return jsonify({'message': 'Login successful'}), 200
     else:
         return jsonify({'message': 'Invalid credentials'}), 401
+    
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.json
+    event_id = data.get('eventId')
+    email = data.get('email')
+    connection = create_connection()
+    create_event_stats_table(connection)
+    cursor = connection.cursor()
+    try:
+        cursor.execute("SELECT user_id FROM users WHERE email = %s",(email,))
+        user_id = cursor.fetchone()[0]
+        print(f'user_id: {user_id}')
+        print(f'event_id: {event_id}')
+    except:
+        print('error in fetching user')
+        return jsonify({'message': 'error registering the user. Please try again.'})
+    try:
+        cursor.execute("INSERT INTO event_stats VALUES (%s,%s)", (event_id, user_id))
+        print('User registered for this event successfully')
+        return jsonify({'message': 'User registered for this event successfully'}), 201
+    except:
+        print('User has already registered')
+        return jsonify({'message': 'User has already registered'}), 401
 
 if __name__ == "__main__": 
     app.run(host='0.0.0.0', port=5001)

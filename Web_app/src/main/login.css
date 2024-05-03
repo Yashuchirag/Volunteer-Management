@@ -1,4 +1,3 @@
-/* Login component specific styles */
 .container{
     display: flex;
     flex-direction: column;
@@ -11,7 +10,6 @@
 }
 
 .header {
-    /* text-align: top; */
     height: 90px;
     font-size:xxx-large;
     margin-top:0px;
@@ -20,12 +18,17 @@
     color: #000099;
 }
 
+.message {
+    font-weight: bold;
+    font-size: 10px;
+    color: brown;
+}
+
 .inputs {
     margin-top: 10px;
     display: flex;
     flex-direction: column;
     gap: 25px;
-    /* background: #681a1a; */
 }
 
 .input {
@@ -66,22 +69,3 @@
     font-weight: 700;
     cursor: pointer;
 }
-
-/* .button {
-    margin-top: 25px;
-}
-
-.button button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 150px;
-    height: 40px;
-    font-size: 20px;
-    margin: auto;
-    border-radius: 10px;
-    color: #ffffff;
-    background: #000099;
-    cursor:pointer;
-} */
-/* Add any other login component specific styles here */
