@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 import psycopg2
 import json
 import re
+import schedule
+import time
 
 def get_html_content(url):
     response = requests.get(url)
@@ -183,6 +185,10 @@ def login():
         return jsonify({'message': 'Invalid credentials'}), 401
 
 if __name__ == "__main__": 
-    # events = create_connection()
-    # create_table(events)
-   app.run(host='0.0.0.0', port=5001)
+    schedule.every(24).hours.do(collect_data)
+
+    app.run(host='0.0.0.0', port=5001)
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)

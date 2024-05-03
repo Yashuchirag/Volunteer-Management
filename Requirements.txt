@@ -6,3 +6,5 @@ psycopg2
 numpy
 re
 datetime
+schedule
+time
