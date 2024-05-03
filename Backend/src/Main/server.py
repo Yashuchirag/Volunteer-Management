@@ -7,22 +7,23 @@ CORS(app)
 
 def create_connection():
     try:
-        # database_url = 'postgres://kwkduxwxgqawim:251a81fb1d17b679565b576b48b8f520f46e5e85ba269d5d4e29e8df247d4ba0@ec2-23-22-172-65.compute-1.amazonaws.com:5432/d2isdsq00u30bg'
-        # default_connection = psycopg2.connect(database_url, sslmode='require')
-        # default_connection.autocommit= True
-        # print("database connection successful")
-        default_connection = psycopg2.connect(
-            user="postgres",
-            password="education",
-            host="localhost",
-            port="5432",
-            database="volunteer_management"
-        )
+        database_url = 'postgres://kwkduxwxgqawim:251a81fb1d17b679565b576b48b8f520f46e5e85ba269d5d4e29e8df247d4ba0@ec2-23-22-172-65.compute-1.amazonaws.com:5432/d2isdsq00u30bg'
+        default_connection = psycopg2.connect(database_url, sslmode='require')
         default_connection.autocommit= True
         print("database connection successful")
-        default_cursor = default_connection.cursor()
-        default_cursor.close()
         return default_connection
+        # default_connection = psycopg2.connect(
+        #     user="postgres",
+        #     password="education",
+        #     host="localhost",
+        #     port="5432",
+        #     database="volunteer_management"
+        # )
+        # default_connection.autocommit= True
+        # print("database connection successful")
+        # default_cursor = default_connection.cursor()
+        # default_cursor.close()
+        # return default_connection
     except:
         print("database connection unsuccessful")
         return None
@@ -65,7 +66,7 @@ def get_events():
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM events where valid_date = 1")
     events = cursor.fetchall()
-    events_details = {}
+    events_details = []
     for i in range(len(events)):
         data = {}
         data['index'] = events[i][0]
@@ -73,7 +74,7 @@ def get_events():
         data['date'] = events[i][2]
         data['time'] = events[i][3]
         data['event_description'] = events[i][4]
-        events_details[f'event_{i+1}'] = data
+        events_details.append(data)
     events = jsonify(events_details)
     cursor.close()
     connection.close()
