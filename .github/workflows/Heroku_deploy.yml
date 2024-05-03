@@ -39,7 +39,7 @@ jobs:
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: webapp-heroku-app  # Replace with your webapp Heroku app name
+          heroku_app_name: "blooming-reef-79073"  # Replace with your webapp Heroku app name
           heroku_email: "chiragchandrashekar@gmail.com"
 
   deploy_data_collector:
@@ -51,7 +51,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'
+          python-version: '3.11'
 
       - name: Deploy Data Collector to Heroku
         uses: akhileshns/heroku-deploy@v3.12.12
@@ -60,7 +60,7 @@ jobs:
           heroku_app_name: datacollectorpython  # Replace with your data collector Heroku app name
           heroku_email: "chiragchandrashekar@gmail.com"
           heroku_process_type: 'web'
-          procfile_path: 'Data_collector_app/Procfile'
+          procfile: 'Data_collector_app/Procfile'
 
   deploy_data_analyzer:
     runs-on: ubuntu-latest
@@ -71,7 +71,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'
+          python-version: '3.11'
 
       - name: Deploy Data Analyzer to Heroku
         uses: akhileshns/heroku-deploy@v3.12.12
@@ -80,4 +80,4 @@ jobs:
           heroku_app_name: dataanalyzer  # Replace with your data analyzer Heroku app name
           heroku_email: "chiragchandrashekar@gmail.com"
           heroku_process_type: 'web'
-          procfile_path: 'Data_analyzer_app/Procfile'
+          procfile: 'Data_analyzer_app/Procfile'
