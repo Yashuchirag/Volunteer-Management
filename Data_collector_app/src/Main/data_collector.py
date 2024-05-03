@@ -69,8 +69,10 @@ def create_events_table(connection):
     cursor.execute('''CREATE TABLE IF NOT EXISTS events (
                         id SERIAL PRIMARY KEY,
                         event_name TEXT,
-                        date_and_time TEXT,
-                        event_description TEXT
+                        date TEXT,
+                        time TEXT,
+                        event_description TEXT,
+                        valid_date INTEGER
                     );''')
     # events.autocommit = True
     cursor.close()
@@ -96,6 +98,7 @@ def insert_event( events, event_name, date, time, event_description, valid_date)
 
 @app.route('/collect-data', methods=['POST'])
 def collect_data():
+    print("Collecting...")
     events = create_connection()
     create_events_table(events)
     eventDeptDict = {'Communications and Engagement':'D/Coms', 'Climate Initiatives':'D/CI', 'Housing and Human Services':'d/hhs', 'Open Space and Mountain Parks':'d/osmp', 'Parks and Recreation':'d/parksrec', 'Public Works':'d/pw',}
@@ -185,7 +188,8 @@ def login():
         return jsonify({'message': 'Invalid credentials'}), 401
 
 if __name__ == "__main__": 
-    schedule.every(24).hours.do(collect_data)
+    collect_data()
+    schedule.every(4).hours.do(collect_data)
 
     app.run(host='0.0.0.0', port=5001)
 
