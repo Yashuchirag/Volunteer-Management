@@ -73,11 +73,26 @@ def get_events():
         data['date'] = events[i][2]
         data['time'] = events[i][3]
         data['event_description'] = events[i][4]
-        events_details[f'event_{i}'] = data
+        events_details[f'event_{i+1}'] = data
     events = jsonify(events_details)
     cursor.close()
     connection.close()
     return (events)
+
+@app.route('/users', methods=['GET'])
+def get_users():
+    print('Getting users data for frontend')
+    connection = create_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT user_id,email FROM users")
+    users_data = cursor.fetchall()
+    users = {}
+    for index,email in users_data:
+        users[index] = email
+    users = jsonify(users)
+    cursor.close()
+    connection.close()
+    return (users)
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -92,7 +107,7 @@ def signup():
     user = cursor.fetchone()
     if user:
         print('User already exists')
-        return jsonify({'message': 'User already exists'}), 400
+        return jsonify({'error': 'User already exists'}), 400
     else:
         # Inserting new user into the database
         cursor.execute("INSERT INTO users (email, password) VALUES (%s, %s)", (email, password))
@@ -112,7 +127,7 @@ def login():
     if user:
         return jsonify({'message': 'Login successful'}), 200
     else:
-        return jsonify({'message': 'Invalid credentials'}), 401
+        return jsonify({'error': 'Incorrect login details or user not signed up.'}), 401
     
 @app.route('/register', methods=['POST'])
 def register():
@@ -129,14 +144,26 @@ def register():
         print(f'event_id: {event_id}')
     except:
         print('error in fetching user')
-        return jsonify({'message': 'error registering the user. Please try again.'})
+        return jsonify({'error': 'error registering the user. Please try again.'})
     try:
         cursor.execute("INSERT INTO event_stats VALUES (%s,%s)", (event_id, user_id))
         print('User registered for this event successfully')
         return jsonify({'message': 'User registered for this event successfully'}), 201
     except:
         print('User has already registered')
-        return jsonify({'message': 'User has already registered'}), 401
+        return jsonify({'error': 'User has already registered'}), 401
+
+@app.route('/event_stats', methods=['GET'])
+def get_event_stats():
+    print('Getting events stats for frontend')
+    connection = create_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM event_stats order by event_id")
+    stats_data = cursor.fetchall()
+    stats = jsonify(stats_data)
+    cursor.close()
+    connection.close()
+    return (stats)
 
 if __name__ == "__main__": 
     app.run(host='0.0.0.0', port=5001)

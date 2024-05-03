@@ -4,9 +4,8 @@ import "./login.css";
 const LoginForm = ({ onLogin }) => {
     const emailRef = useRef(null);
     const passwordRef = useRef(null);
-    const [userEmail, setUserEmail] = useState("");
-    const [userPassword, setUserPassword] = useState("");
     const [message, setMessage] = useState("");
+    const [messageColor, setMessageColor] = useState("");
 
     const handleSignup = (event) => {
         event.preventDefault();
@@ -27,20 +26,24 @@ const LoginForm = ({ onLogin }) => {
                 if (data.error) {
                     console.log(data.error);
                     setMessage(data.error);
+                    setMessageColor('brown');
                 }
                 else {
                     emailRef.current.value = "";
                     passwordRef.current.value = "";
                     console.log(data.message);
                     setMessage(data.message);
+                    setMessageColor('darkgreen');
                 }
             })
             .catch(error => {
                 console.error(error);
                 setMessage('Error registering the user. Please try again.');
+                setMessageColor('brown');
             });
         } else {
-            setMessage("Email and password is missing.");
+            setMessage("Email and/or password is missing.");
+            setMessageColor('brown');
         }
         emailRef.current.value = "";
         passwordRef.current.value = "";
@@ -67,12 +70,14 @@ const LoginForm = ({ onLogin }) => {
                 if (data.error) {
                     console.log(data.error);
                     setMessage(data.error);
+                    setMessageColor('brown');
                 }
                 else {
                     emailRef.current.value = "";
                     passwordRef.current.value = "";
                     console.log(data.message);
                     setMessage(data.message);
+                    setMessageColor('darkgreen');
                     if (status == 200){
                         onLogin(email);
                     }
@@ -81,10 +86,12 @@ const LoginForm = ({ onLogin }) => {
             .catch(error => {
                 console.error(error);
                 setMessage('Error logging in the user. Please try again.');
+                setMessageColor('brown');
             });
         } else {
-            setMessage("Incorrect login details or user not signed up.");
-            console.log("Incorrect login details or user not signed up.");    
+            console.log("Email and/or password is missing.")
+            setMessage("Email and/or password is missing.");
+            setMessageColor('brown');
         }
         emailRef.current.value = "";
         passwordRef.current.value = "";
@@ -96,7 +103,7 @@ const LoginForm = ({ onLogin }) => {
                 <div className='text'><b>Volunteer Management Platform</b></div>
                 <div className='underline'></div>
             </div>
-            {message && <div className='message'>{message}</div>} {/* Display feedback message */}
+            {message && <div className='message' style={{ color: messageColor }}>{message}</div>}
             <div className='inputs'>
                 <div className='input'>
                     <input type="email" placeholder="Email Id" ref={emailRef} />

@@ -4,6 +4,8 @@ import './homepage.css';
 const Homepage = ({ email, events }) => {
     const user = email.split('@')[0];
     const [message, setMessage] = useState("");
+    const [messageColor, setMessageColor] = useState("");
+
     const handleRegister = (eventId) => {
         fetch('http://localhost:5001/register', {
             method: 'POST',
@@ -19,15 +21,18 @@ const Homepage = ({ email, events }) => {
             if (data.error) {
                 console.log(data.error);
                 setMessage(data.error);
+                setMessageColor('brown');
             }
             else {
                 console.log(data.message);
                 setMessage(data.message);
+                setMessageColor('darkgreen');
             }
         })
         .catch(error => {
             console.error('Error registering user for event:', error);
             setMessage('Error registering user for event. Please try again.');
+            setMessageColor('brown');
         });
     };
 
@@ -36,7 +41,7 @@ const Homepage = ({ email, events }) => {
             <div className="heading">Volunteer Management Platform </div>
             <div className="title">Welcome, {user}! </div>
             <div className="subtitle"><b>Upcoming Events:</b>
-            {message && <div className='message'>{message}</div>} </div>
+                <div className='message' style={{ color: messageColor }}>{message}</div></div>
             <div className="event-cards">
                 {events.map((event, index) => {
                     return (
