@@ -10,8 +10,5 @@ COPY . /app
 # Install dependencies from requirements.txt
 RUN pip install --no-cache-dir -r Requirements.txt
 
-# Expose the port on which your Flask app will run
-EXPOSE 5001
-
 # Run the Flask app
-CMD ["python", "data_collector.py"]
+CMD ["python", "src/Main/data_collector.py"]

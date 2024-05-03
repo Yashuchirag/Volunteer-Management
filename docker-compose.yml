@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  # webapp:
+  #   build:
+  #     context: ./webapp
+  #   ports:
+  #     - "3000:3000"  # Map port 3000 on host to port 3000 on webapp container
+  #   depends_on:
+  #     - data-collector
+  #     - data-analyzer
+
+  data-collector:
+    build:
+      context: ./Data_collector_app
+
+  data-analyzer:
+    build:
+      context: ./Data_analyzer_app
+    ports:
+      - "5002:5002"  # Map port 5000 on host to port 5000 on data-analyzer container
