@@ -1,0 +1,10 @@
+flask
+requests
+bs4
+pandas
+psycopg2
+numpy
+re
+datetime
+schedule
+time
