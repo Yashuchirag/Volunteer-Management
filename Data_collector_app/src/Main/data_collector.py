@@ -69,8 +69,10 @@ def create_events_table(connection):
     cursor.execute('''CREATE TABLE IF NOT EXISTS events (
                         id SERIAL PRIMARY KEY,
                         event_name TEXT,
-                        date_and_time TEXT,
-                        event_description TEXT
+                        date TEXT,
+                        time TEXT,
+                        event_description TEXT,
+                        valid_date INTEGER
                     );''')
     # events.autocommit = True
     cursor.close()
@@ -186,9 +188,10 @@ def login():
         return jsonify({'message': 'Invalid credentials'}), 401
 
 if __name__ == "__main__": 
-    schedule.every(20).seconds.do(collect_data)
+    collect_data()
+    schedule.every(4).hours.do(collect_data)
 
-    # app.run(host='0.0.0.0', port=5001)
+    app.run(host='0.0.0.0', port=5001)
 
     while True:
         schedule.run_pending()
