@@ -29,7 +29,8 @@ const Homepage = ({ user, events }) => {
                         <div className="event-card" key={index}>
                             <div className="event-name">{event.event_name}</div>
                             <div className="event-description">{event.event_description}</div>
-                            <div className="event-date-time">{`${event.date} - ${event.time}`}</div>
+                            <div className="event-date-time">{`${event.date} - ${event.time}`}
+                            <button className="register-button">Register</button> </div>
                             {/* <div className="event-date">{date}</div>
                             <div className="event-time">{time}</div> */}
                         </div>
