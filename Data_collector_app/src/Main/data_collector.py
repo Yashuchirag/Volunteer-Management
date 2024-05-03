@@ -1,9 +1,6 @@
-from flask import Flask, abort, request, jsonify
-from flask_cors import CORS
 import requests
 from bs4 import BeautifulSoup
 import psycopg2
-import json
 import re
 import schedule
 import time
@@ -13,13 +10,10 @@ def get_html_content(url):
     if response.status_code == 200:
         return BeautifulSoup(response.text, "html.parser")
     else:
-        abort(500, f"Failed to fetch HTML content from {url}. Status code: {response.status_code}")
+        print("Failed to fetch HTML content from {url}. Status code: {response.status_code}")
 
-app = Flask(__name__)
-CORS(app)
+
 def create_connection():
-    
-    # Connect to the default PostgreSQL database (usually 'postgres')
     try:
 
         default_connection = psycopg2.connect(
@@ -67,23 +61,13 @@ def create_events_table(connection):
     cursor = connection.cursor()
     # Adjust the table schema as per your requirements
     cursor.execute('''CREATE TABLE IF NOT EXISTS events (
-                        id SERIAL PRIMARY KEY,
+                        id SERIAL not null,
                         event_name TEXT,
                         date TEXT,
                         time TEXT,
                         event_description TEXT,
-                        valid_date INTEGER
-                    );''')
-    # events.autocommit = True
-    cursor.close()
-
-def create_users_table(connection):
-    cursor = connection.cursor()
-    # Adjust the table schema as per your requirements
-    cursor.execute('''CREATE TABLE IF NOT EXISTS users (
-                        id SERIAL not null,
-                        email TEXT primary key,
-                        password TEXT not null
+                        valid_date INTEGER,
+                        PRIMARY KEY (event_name,date,time,event_description)
                     );''')
     # events.autocommit = True
     cursor.close()
@@ -96,7 +80,6 @@ def insert_event( events, event_name, date, time, event_description, valid_date)
     # events.commit()
     cursor.close()
 
-@app.route('/collect-data', methods=['POST'])
 def collect_data():
     print("Collecting...")
     events = create_connection()
@@ -125,73 +108,11 @@ def collect_data():
             if all((events, event_name, date, time, description, valid_date)):
                 insert_event(events, event_name, date, time, description, valid_date)
 
-    return "Data collected and stored successfully in PostgreSQL."
-
-@app.route('/events', methods=['GET'])
-def get_events():
-    print('Getting events data for frontend')
-    connection = create_connection()
-    cursor = connection.cursor()
-    cursor.execute("SELECT * FROM events")
-    events = cursor.fetchall()
-    events_details = {}
-    for i in range(len(events)):
-        data = {}
-        data['index'] = events[i][0]
-        data['event_name'] = events[i][1]
-        data['date_and_time'] = events[i][2]
-        data['event_description'] = events[i][3]
-        events_details[f'event_{i}'] = data
-    events = json.dumps(events_details)
-    cursor.close()
-    connection.close()
-    print(type(events))
-    return (events)
-
-@app.route('/signup', methods=['POST'])
-def signup():
-    data = request.json
-    email = data.get('email')
-    print('email: ',email)
-    password = data.get('password')
-    print('password: ',password)
-    # Check if user already exists in the database
-    connection = create_connection()
-    create_users_table(connection)
-    cursor = connection.cursor()
-    cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
-    user = cursor.fetchone()
-    if user:
-        print('User already exists')
-        return jsonify({'message': 'User already exists'}), 400
-    else:
-        # Insert new user into the database
-        cursor.execute("INSERT INTO users (email, password) VALUES (%s, %s)", (email, password))
-        print('User created successfully')
-        return jsonify({'message': 'User created successfully'}), 201
-    
-@app.route('/login', methods=['POST'])
-def login():
-    data = request.json
-    email = data.get('email')
-    print('email: ',email)
-    password = data.get('password')
-    print('password: ',password)
-    connection = create_connection()
-    create_users_table(connection)
-    cursor = connection.cursor()
-    cursor.execute("SELECT * FROM users WHERE email = %s AND password = %s", (email, password))
-    user = cursor.fetchone()
-    if user:
-        return jsonify({'message': 'Login successful'}), 200
-    else:
-        return jsonify({'message': 'Invalid credentials'}), 401
+    print("Data collected and stored successfully in PostgreSQL.")
 
 if __name__ == "__main__": 
     collect_data()
-    schedule.every(4).hours.do(collect_data)
-
-    app.run(host='0.0.0.0', port=5001)
+    schedule.every(30).seconds.do(collect_data)
 
     while True:
         schedule.run_pending()
