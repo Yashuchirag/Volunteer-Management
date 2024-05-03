@@ -15,53 +15,20 @@ def get_html_content(url):
 
 def create_connection():
     try:
-
-        default_connection = psycopg2.connect(
-            user="postgres",
-            password="education",
-            host="localhost",
-            port="5432",
-            database="volunteer_management"
-        )
+        #Connecting to Heroku Postgres
+        database_url = 'postgres://kwkduxwxgqawim:251a81fb1d17b679565b576b48b8f520f46e5e85ba269d5d4e29e8df247d4ba0@ec2-23-22-172-65.compute-1.amazonaws.com:5432/d2isdsq00u30bg'
+        default_connection = psycopg2.connect(database_url, sslmode='require')
         default_connection.autocommit= True
         print("database connection successful")
-        default_cursor = default_connection.cursor()
-        default_cursor.close()
+        return default_connection
     except:
-        # Create the specified database if it does not exist
-        default_connection = psycopg2.connect(
-            user="postgres",
-            password="education",
-            host="localhost",
-            port="5432",
-            database="postgres"
-        )
-        default_connection.autocommit= True
-        default_cursor = default_connection.cursor()
-        sql= '''CREATE database volunteer_management''';
-        default_cursor.execute(sql)
-        print("database created successfully")
-        default_cursor.close()
-        default_connection.close()
-
-        # Connect to the specified database
-        
-        default_connection = psycopg2.connect(
-            user="postgres",
-            password="education",
-            host="localhost",
-            port="5432",
-            database="volunteer_management"
-        )
-        default_connection.autocommit= True
-        print("database connection successful")
-    return default_connection
+        print("Database connection unsuccessful.")
+        return None
 
 def create_events_table(connection):
     cursor = connection.cursor()
-    # Adjust the table schema as per your requirements
     cursor.execute('''CREATE TABLE IF NOT EXISTS events (
-                        id SERIAL not null,
+                        event_id SERIAL not null,
                         event_name TEXT,
                         date TEXT,
                         time TEXT,
@@ -69,7 +36,6 @@ def create_events_table(connection):
                         valid_date INTEGER,
                         PRIMARY KEY (event_name,date,time,event_description)
                     );''')
-    # events.autocommit = True
     cursor.close()
 
 def insert_event( events, event_name, date, time, event_description, valid_date):
@@ -77,16 +43,17 @@ def insert_event( events, event_name, date, time, event_description, valid_date)
     cursor.execute('''INSERT INTO events (event_name, date, time, event_description, valid_date) 
                    VALUES (%s, %s, %s, %s, %s) ON CONFLICT DO NOTHING;''',
                    (event_name, date, time, event_description, valid_date))
-    # events.commit()
     cursor.close()
 
 def collect_data():
     print("Collecting...")
     events = create_connection()
     create_events_table(events)
+    
+    # Scraping the events data
     eventDeptDict = {'Communications and Engagement':'D/Coms', 'Climate Initiatives':'D/CI', 'Housing and Human Services':'d/hhs', 'Open Space and Mountain Parks':'d/osmp', 'Parks and Recreation':'d/parksrec', 'Public Works':'d/pw',}
     for dept in eventDeptDict.keys():
-        url = "https://countmein.bouldercolorado.gov/" + eventDeptDict[dept]  # Adjust the URL accordingly
+        url = "https://countmein.bouldercolorado.gov/" + eventDeptDict[dept]
         html_content = get_html_content(url)
         event_html = html_content.find_all('tr')
 
@@ -95,7 +62,7 @@ def collect_data():
             date_time_element = event_list.find('h5', attrs={"class": "margin-top-5"})
             description_element = event_list.find('p')
 
-            # Check if elements are found before calling get_text()
+            # Checking if elements are found
             event_name = event_name_element.get_text().replace('\n', '') if event_name_element else None
             date_time = date_time_element.get_text().replace('\n', '') if date_time_element else None
             date_time = date_time_element.get_text() if date_time_element else None
@@ -104,15 +71,15 @@ def collect_data():
             description = description_element.get_text().replace('\n', '') if description_element else None
             valid_date = 1
 
-            # Insert data into PostgreSQL table only if all elements are found
+            # Inserting data into PostgreSQL table only if all elements are found
             if all((events, event_name, date, time, description, valid_date)):
                 insert_event(events, event_name, date, time, description, valid_date)
 
     print("Data collected and stored successfully in PostgreSQL.")
 
-if __name__ == "__main__": 
+if __name__ == "__main__":
     collect_data()
-    schedule.every(30).seconds.do(collect_data)
+    schedule.every(4).hours.do(collect_data)
 
     while True:
         schedule.run_pending()

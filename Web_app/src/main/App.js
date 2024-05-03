@@ -14,14 +14,14 @@ const App = () => {
             const response = await fetch('http://localhost:5001/events');
             if (response.ok) {
                 const eventData = await response.json();
-                // Transform the object into an array
+                // Transforming the object into an array
                 const eventsArray = Object.keys(eventData).map(key => {
                     return {
                         ...eventData[key],
-                        id: key, // Add the key as an id to the event object
+                        id: key, // Adding the key as an id to the event object
                     };
                 });
-                setEvents(eventsArray); // Update events state with fetched data
+                setEvents(eventsArray); // Updating the events state with fetched data
                 
             } else {
                 setError(`Failed to fetch events with status: ${response.status}`);
@@ -36,17 +36,14 @@ const App = () => {
     }, [events]);
 
     const handleLogin = (email) => {
-        // Here you can perform authentication logic
-        // For simplicity, let's just set the logged-in user
-        const username = email.split('@')[0];
-        setLoggedInUser(username);
+        setLoggedInUser(email);
         fetchEvents();
     };
 
     return (
         <div>
             {loggedInUser ? (
-                <Homepage user={loggedInUser} events={events} />
+                <Homepage email={loggedInUser} events={events} />
             ) : (
                 <LoginForm onLogin={handleLogin} />
             )}

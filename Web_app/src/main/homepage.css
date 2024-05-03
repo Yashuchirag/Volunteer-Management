@@ -22,8 +22,15 @@
     font-size: 30px;
 }
 
+.message {
+    float: right;
+    font-weight: bold;
+    font-size: 20px;
+    /* color: brown; */
+}
+
 .event-card {
-    margin-top: 20px;
+    margin-top: 25px;
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 10px;

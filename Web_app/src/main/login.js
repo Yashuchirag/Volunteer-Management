@@ -4,19 +4,14 @@ import "./login.css";
 const LoginForm = ({ onLogin }) => {
     const emailRef = useRef(null);
     const passwordRef = useRef(null);
-    const [userEmail, setUserEmail] = useState("");
-    const [userPassword, setUserPassword] = useState("");
-    const [message, setMessage] = useState(""); // For user feedback
+    const [message, setMessage] = useState("");
+    const [messageColor, setMessageColor] = useState("");
 
     const handleSignup = (event) => {
         event.preventDefault();
         const email = emailRef.current.value;
         const password = passwordRef.current.value;
         if (email && password) {
-            // setUserEmail(email);
-            // setUserPassword(password);
-            // setMessage(`Email: ${email} signed up successfully.`);
-            // console.log(`Email: ${email} signed up successfully.`);
             fetch('http://localhost:5001/signup', {
                 method: 'POST',
                 headers: {
@@ -31,20 +26,24 @@ const LoginForm = ({ onLogin }) => {
                 if (data.error) {
                     console.log(data.error);
                     setMessage(data.error);
+                    setMessageColor('brown');
                 }
                 else {
                     emailRef.current.value = "";
                     passwordRef.current.value = "";
                     console.log(data.message);
                     setMessage(data.message);
+                    setMessageColor('darkgreen');
                 }
             })
             .catch(error => {
                 console.error(error);
-                alert('Error registering the user. Please try again.');
+                setMessage('Error registering the user. Please try again.');
+                setMessageColor('brown');
             });
         } else {
-            alert("Email and password is missing.");
+            setMessage("Email and/or password is missing.");
+            setMessageColor('brown');
         }
         emailRef.current.value = "";
         passwordRef.current.value = "";
@@ -55,10 +54,6 @@ const LoginForm = ({ onLogin }) => {
         const email = emailRef.current.value;
         const password = passwordRef.current.value;
         var status = 0;
-        // if (email === userEmail && password === userPassword && email && password) {
-        //     console.log(`Email: ${email} logged in successfully.`);
-        //     setMessage(`Email: ${email} logged in successfully.`);
-        //     onLogin(email); // Call the passed `onLogin` function to update the app's state
         if (email && password) {
             fetch('http://localhost:5001/login', {
                 method: 'POST',
@@ -75,12 +70,14 @@ const LoginForm = ({ onLogin }) => {
                 if (data.error) {
                     console.log(data.error);
                     setMessage(data.error);
+                    setMessageColor('brown');
                 }
                 else {
                     emailRef.current.value = "";
                     passwordRef.current.value = "";
                     console.log(data.message);
                     setMessage(data.message);
+                    setMessageColor('darkgreen');
                     if (status == 200){
                         onLogin(email);
                     }
@@ -88,18 +85,13 @@ const LoginForm = ({ onLogin }) => {
             })
             .catch(error => {
                 console.error(error);
-                alert('Error logging in the user. Please try again.');
+                setMessage('Error logging in the user. Please try again.');
+                setMessageColor('brown');
             });
-            // if (response.ok) {
-            //     setMessage(`Email: ${email} logged in successfully.`);
-            //     onLogin(email);
-            // } else {
-            //     setMessage('Incorrect login details or user not signed up.');
-            // }
-    
         } else {
-            setMessage("Incorrect login details or user not signed up.");
-            console.log("Incorrect login details or user not signed up.");    
+            console.log("Email and/or password is missing.")
+            setMessage("Email and/or password is missing.");
+            setMessageColor('brown');
         }
         emailRef.current.value = "";
         passwordRef.current.value = "";
@@ -111,7 +103,7 @@ const LoginForm = ({ onLogin }) => {
                 <div className='text'><b>Volunteer Management Platform</b></div>
                 <div className='underline'></div>
             </div>
-            {message && <div className='message'>{message}</div>} {/* Display feedback message */}
+            {message && <div className='message' style={{ color: messageColor }}>{message}</div>}
             <div className='inputs'>
                 <div className='input'>
                     <input type="email" placeholder="Email Id" ref={emailRef} />
