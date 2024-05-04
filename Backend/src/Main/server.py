@@ -59,6 +59,10 @@ def create_event_stats_table(connection):
                     );''')
     cursor.close()
 
+@app.route('/', methods=['GET'])
+def index():
+    return ('This is the backend server for Volunteers Management Platform', 200)
+
 @app.route('/events', methods=['GET'])
 def get_events():
     print('Getting events data for frontend')
