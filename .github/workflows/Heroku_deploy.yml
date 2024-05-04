@@ -101,5 +101,5 @@ jobs:
         with:
           email: "chiragchandrashekar@gmail.com" # your heroku email
           api_key: ${{secrets.HEROKU_API_KEY}} # your  heroku api key
-          docker_compose_file: './docker-compose.yml' # set the path to the folder where the docker-compose file is located
+          docker_compose_file: './docker-compose.yml'
           heroku_apps: '[{"imagename":"webapp","appname":"blooming-reef-79073","apptype":"web"},{"imagename":"backend","appname":"backend-volunteer-management","apptype":"web"},{"imagename":"data-collector","appname":"datacollectorpython","apptype":"worker"},{"imagename":"data-analyzer","appname":"dataanalyzer","apptype":"web"}]' # List of Docker Image name, Heroku app and Heroku app type
