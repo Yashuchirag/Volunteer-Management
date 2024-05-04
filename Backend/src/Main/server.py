@@ -170,5 +170,19 @@ def get_event_stats():
     connection.close()
     return (stats)
 
+@app.route('/volunteer-count', methods=['GET'])
+def get_volunteer_count():
+    try:
+        connection = create_connection()
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM analysis_results")
+        volunteer_count = cursor.fetchone()[0]
+        cursor.close()
+        connection.close()
+        return jsonify({'volunteerCount': volunteer_count}), 200
+    except Exception as e:
+        print('Error fetching volunteer count:', e)
+        return jsonify({'error': 'Error fetching volunteer count'}), 500
+
 if __name__ == "__main__": 
     app.run(host='0.0.0.0', port=5001)
