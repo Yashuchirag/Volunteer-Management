@@ -14,4 +14,4 @@ RUN pip install --no-cache-dir -r Requirements.txt
 EXPOSE 5002
 
 # Run the Flask app
-CMD ["python", "data_analyzer_app.py"]
+CMD ["python", "src/Main/Data_analyzer_app.py"]
