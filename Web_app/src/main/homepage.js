@@ -5,26 +5,6 @@ const Homepage = ({ email, events }) => {
     const user = email.split('@')[0];
     const [message, setMessage] = useState("");
     const [messageColor, setMessageColor] = useState("");
-    const [volunteerCount, setVolunteerCount] = useState(0);
-
-    useEffect(() => {
-        fetchVolunteerCount();
-    }, []);
-
-    const fetchVolunteerCount = () => {
-        fetch('http://localhost:5001/volunteer-count') // Replace with your actual backend URL
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    console.error(data.error);
-                } else {
-                    setVolunteerCount(data.volunteerCount);
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching volunteer count:', error);
-            });
-    };
     
     const handleRegister = (eventId) => {
         fetch('http://localhost:5001/register', {
