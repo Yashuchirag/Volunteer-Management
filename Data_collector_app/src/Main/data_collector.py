@@ -75,7 +75,7 @@ def collect_data():
             if all((events, event_name, date, time, description, valid_date)):
                 insert_event(events, event_name, date, time, description, valid_date)
 
-    print("Data collected and stored successfully in PostgreSQL.")
+    return "Data collected and stored successfully in PostgreSQL.",200
 
 if __name__ == "__main__":
     collect_data()

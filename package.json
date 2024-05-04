@@ -2,7 +2,7 @@
   "name": "Volunteers Management Platform",
   "version": "1.0.0",
   "scripts": {
-    "start": "concurrently \"python Web_app/Backend/src/Main/server.py\" \"cd Web_app && react-scripts start\"",
+    "start": "concurrently \"python Backend/src/Main/server.py\" \"cd Web_app && react-scripts start\"",
     "build": "cd Web_app && react-scripts build",
     "test": "cd Web_app && react-scripts test",
     "eject": "cd Web_app && react-scripts eject",

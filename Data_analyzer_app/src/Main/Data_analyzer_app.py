@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 import psycopg2
 import numpy as np
-import datetime
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -32,29 +32,30 @@ def analyze_data():
     # Connect to the PostgreSQL database
     connection = create_connection()#psycopg2.connect(**DB_PARAMS)
     cursor = connection.cursor()
-    # cursor2 = connection.cursor()
 
     try:
         # Fetch data from the database table
-        cursor.execute("SELECT COUNT(EMAIL) FROM VOLUNTEER_TABLE_TEST;")
+        cursor.execute("SELECT COUNT(email) FROM users;")
         volunteer_count = cursor.fetchall()[0][0]
 
-        cursor.execute("SELECT DATE, VALID_DATE from EVENT_LIST;")
+        cursor.execute("SELECT DATE, VALID_DATE from events;")
+        event_date_time = cursor.fetchall()
+
+        cursor.execute("SELECT event_id,count(user_id) from event_stats group by event_id order by count;")
         event_data = cursor.fetchall()
 
         # Check if data is retrieved
         if not volunteer_count:
             return jsonify({"error": "No data retrieved from the login database"}), 400
         
-        if not event_data:
+        if not event_date_time:
             return jsonify({"error": "No data retrieved from the event sign up database"}), 400
         
-        dates = [row[0] for row in event_data]
-        valid_dates = [row[1] for row in event_data]
+        dates = [row[0] for row in event_date_time]
 
         # Perform data analysis and store result in database
-        store_valid_date(cursor, dates, valid_dates)
-        store_analysis_result(cursor, volunteer_count)
+        store_valid_date(cursor, dates)
+        store_analysis_result(cursor, volunteer_count, event_data)
 
         # Commit changes to the database
         connection.commit()
@@ -70,11 +71,21 @@ def analyze_data():
         cursor.close()
         connection.close()
 
-def store_analysis_result(cursor_analysis, vol_count, sign_up_tups):    
+def store_analysis_result(cursor_analysis, vol_count, event_data):    
     # Store analysis result in database table
-    cursor_analysis.execute("INSERT INTO analysis_results (volunteer_count) VALUES (%s);", (vol_count))
+    cursor_analysis.execute('''CREATE table if not exists analysis_results (
+                            volunteer_count integer primary key);
+                            ''') 
+    cursor_analysis.execute("INSERT INTO analysis_results (volunteer_count) VALUES (%s) ON CONFLICT DO NOTHING;", (vol_count,))
+    cursor_analysis.execute('''CREATE table if not exists analysis_results_2 (
+                            event_id integer primary key,
+                            count integer);
+                            ''')
+    for row in event_data:
+        cursor_analysis.execute("INSERT INTO analysis_results_2 (event_id,count) VALUES (%s,%s) on conflict (event_id) do update set count = excluded.count;",
+                                (row[0],row[1]))
 
-def store_valid_date(cursor_analysis, dates, valid_date):
+def store_valid_date(cursor_analysis, dates):
     # Check if the event date is in the future
     current_date = datetime.now().date()
 
@@ -82,10 +93,10 @@ def store_valid_date(cursor_analysis, dates, valid_date):
         event_date = datetime.strptime(event_date, "%d %B %Y").date()
         if event_date >= current_date:
             # If the event date is in the future, set VALID_DATE to 1
-            cursor_analysis.execute("UPDATE EVENT_LIST SET VALID_DATE = 1 WHERE TO_DATE(DATE, 'DD Month YYYY') = %s", (event_date,))
+            cursor_analysis.execute("UPDATE events SET VALID_DATE = 1 WHERE TO_DATE(DATE, 'DD Month YYYY') = %s", (event_date,))
         else:
             # If the event date is in the past, set VALID_DATE to 0
-            cursor_analysis.execute("UPDATE EVENT_LIST SET VALID_DATE = 0 WHERE TO_DATE(DATE, 'DD Month YYYY') = %s", (event_date,))
+            cursor_analysis.execute("UPDATE events SET VALID_DATE = 0 WHERE TO_DATE(DATE, 'DD Month YYYY') = %s", (event_date,))
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5002)
