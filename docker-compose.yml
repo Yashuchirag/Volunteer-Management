@@ -3,7 +3,7 @@ version: '3.8'
 services:
   webapp:
     build:
-      context: ./webapp
+      context: ./Web_app
     ports:
       - "3000:80"  # Map port 3000 on host to port 3000 on webapp container
     depends_on:
@@ -13,7 +13,7 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: ./Backend
     ports:
       - "5001:5001"
     depends_on:
