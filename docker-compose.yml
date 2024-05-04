@@ -32,3 +32,4 @@ services:
     ports:
       - "5002:5002"  # Map port 5000 on host to port 5000 on data-analyzer container
 
+
