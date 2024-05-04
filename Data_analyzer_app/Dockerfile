@@ -13,5 +13,7 @@ RUN pip install --no-cache-dir -r Requirements.txt
 # Expose the port on which your Flask app will run
 EXPOSE 5002
 
+RUN python -m unittest discover -s src/Test
+
 # Run the Flask app
 CMD ["python", "src/Main/Data_analyzer_app.py"]

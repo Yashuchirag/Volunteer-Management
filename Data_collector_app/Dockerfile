@@ -10,5 +10,9 @@ COPY . /app
 # Install dependencies from requirements.txt
 RUN pip install --no-cache-dir -r Requirements.txt
 
+RUN python -m unittest discover -s src/Test
+
+EXPOSE 5001
+
 # Run the Flask app
 CMD ["python", "src/Main/data_collector.py"]
