@@ -7,7 +7,7 @@ main_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'Main'
 sys.path.append(main_path)
 
 # Import the Flask app from the data_analyzer module
-from data_analyzer import app
+from Data_analyzer_app import app
 
 class TestDataAnalyzer(unittest.TestCase):
 
@@ -36,8 +36,8 @@ class TestDataAnalyzer(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
         # Uncomment the below lines to print the response content and check manually
-        # print(response.data.decode('utf-8'))
-        # self.assertTrue("Analysis result stored successfully in the database" in response.data.decode('utf-8'))
+        print(response.data.decode('utf-8'))
+        self.assertTrue("Analysis result stored successfully in the database" in response.data.decode('utf-8'))
 
 if __name__ == '__main__':
     unittest.main()
