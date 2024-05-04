@@ -6,18 +6,30 @@ import datetime
 app = Flask(__name__)
 
 # Database connection parameters
-DB_PARAMS = {
-    'user': 'postgres',
-    'password': 'postthis9317',
-    'host': 'localhost',
-    'port': '5432',
-    'database': 'Volunteer_Management'
-}
+# DB_PARAMS = {
+#     'user': 'postgres',
+#     'password': 'postthis9317',
+#     'host': 'localhost',
+#     'port': '5432',
+#     'database': 'Volunteer_Management'
+# }
+
+def create_connection():
+    try:
+        #Connecting to Heroku Postgres
+        database_url = 'postgres://kwkduxwxgqawim:251a81fb1d17b679565b576b48b8f520f46e5e85ba269d5d4e29e8df247d4ba0@ec2-23-22-172-65.compute-1.amazonaws.com:5432/d2isdsq00u30bg'
+        default_connection = psycopg2.connect(database_url, sslmode='require')
+        default_connection.autocommit= True
+        print("database connection successful")
+        return default_connection
+    except:
+        print("Database connection unsuccessful.")
+        return None
 
 @app.route('/analyze-data', methods=['POST'])
 def analyze_data():
     # Connect to the PostgreSQL database
-    connection = psycopg2.connect(**DB_PARAMS)
+    connection = create_connection()#psycopg2.connect(**DB_PARAMS)
     cursor = connection.cursor()
     # cursor2 = connection.cursor()
 
