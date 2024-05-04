@@ -23,8 +23,6 @@ services:
   data-collector:
     build:
       context: ./Data_collector_app
-    ports:
-      - "5003:5003"
 
   data-analyzer:
     build:
