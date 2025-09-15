@@ -14,7 +14,6 @@ This project is a full-stack application for managing volunteer events. It inclu
 * [Event Scraper](#event-scraper)
 * [Data Analysis](#data-analysis)
 * [Contributing](#contributing)
-* [License](#license)
 
 ---
 
@@ -45,7 +44,7 @@ This project is a full-stack application for managing volunteer events. It inclu
 1. **Clone the repository**
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Yashuchirag/Volunteer-Management.git
 cd volunteer-management-platform
 ```
 
@@ -203,7 +202,3 @@ python scraper.py
 5. Open a Pull Request
 
 ---
-
-## License
-
-This project is licensed under the MIT License.
